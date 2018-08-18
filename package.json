@@ -1,0 +1,11 @@
+{
+  "name": "dashboard-miser",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Barbatheus",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3"
+  }
+}
