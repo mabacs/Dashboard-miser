@@ -43,9 +43,11 @@ app.get('/auth/code', (req, res) => {
         headers: {
             'Content-type': 'application/x-www-form-urlencoded'
         }
-    }).then(response => {
-        slackToken = response.data.access_token;
-        res.send(response.data.access_token);
+    }).then(resAxios => {        
+        // res.cookie('slackToken', resAxios.data.access_token);
+        // res.end();
+        slackToken = resAxios.data.access_token;
+        // res.send(resAxios.data.access_token);
     });
 });
 
@@ -72,16 +74,16 @@ app.get('/here', (req, res) => {
 
 // https://api.slack.com/methods/conversations.list
 // get channels info
-// app.get('/channel', (req, res) => {
-//     var str = process.env.SLACK_BASE + process.env.SLACK_CHANNELS
-//     + '?token=' + slackToken
+app.get('/channel', (req, res) => {
+    var str = process.env.SLACK_BASE + process.env.SLACK_CHANNELS
+    + '?token=' + slackToken
 
-//     axios.get(
-//         encodeURI(str)    
-//     ).then(result => {        
-//         res.json(result.data.channels);
-//     });
-// });
+    axios.get(
+        encodeURI(str)    
+    ).then(result => {        
+        res.json(result.data.channels);
+    });
+});
 
 // general id = CCAB2Q0P7
 // random id = CCB7XG6TH
