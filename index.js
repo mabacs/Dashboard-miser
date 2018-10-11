@@ -1,9 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const axios = require('axios');
 const querystring = require('querystring');
 const app = express();
+const axios = require('axios');
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -13,6 +15,19 @@ app.get('/', function (req, res) {
 });
 
 app.listen('4392', function () {
+
+app.get('/auth', (req, res) => {
+    var str = process.env.SLACK_BASE + process.env.SLACK_SEARCH_MSG 
+    + '?token=xoxp-417514605056-419276193895-419538005029-3bb9bcd489238edd34f2fbb89ec9e9f7'
+    + '&query=@here'
+    + '&highlights=true';
+
+    axios.get(
+        encodeURI(str)    
+    ).then(result => {
+        console.log('@here: ', result);
+        res.json(result.data);
+    });
 });
 
 app.get('/spotify/token', (req, res) => {
