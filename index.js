@@ -9,8 +9,16 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+app.use(function(_, res, next) {
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+    next();
+});
+
 app.get('/', function (req, res) {
-    res.send('Miser Test');
+    res.send('<h1>Dashboard Miser!</h1>');
 });
 
 app.listen('4392', function () {
@@ -118,6 +126,56 @@ app.get('/auth/code', (req, res) => {
 //     });
 // });
 
+app.get('/slack/token', (req, res) => {
+    let data = querystring.stringify({
+        client_id: encodeURI(process.env.SLACK_CLIENT_ID),
+        client_secret: encodeURI(process.env.SLACK_CLIENT_SECRET),
+        code: encodeURI(req.query.code),
+    });
+
+    axios.post(process.env.SLACK_AUTH_ACCESS, data, {
+        headers: {
+            'Content-type': 'application/x-www-form-urlencoded',
+        },
+    }).then(resAxios => {
+        var token = resAxios.data.access_token;
+
+        if (resAxios.data.access_token !== undefined) {
+            res.cookie('slackToken', token);
+            res.send("slack cookie set");
+            // res.send(`
+            //     <!DOCTYPE html>
+            //     <html lang="en">
+            //     <head>
+            //         <script>
+            //             window.close();    
+            //         </script>
+            //     </head>
+            //     <body></body>
+            //     </html>
+            // `);
+        } else {
+            res.send(resAxios.data);
+        }
+    //    slackToken = resAxios.data.access_token;
+    //     res.send(resAxios.data.access_token);
+    }).catch(function (error) {
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            res.send(error.response.data);
+        } else if (error.request) {
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            res.send(error.request)
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            res.send(error.message);
+        }
+    });
+});
+
 app.get('/spotify/token', (req, res) => {
     var data = {
         code: req.query.code,
@@ -140,9 +198,32 @@ app.get('/spotify/token', (req, res) => {
     };
 
     axios(postConfig)
-        .then(resAxios => {            
-            res.cookie('spotifyToken', resAxios.data.access_token);
-            res.end();
+        .then(resAxios => {
+            var token = resAxios.data.access_token;
+
+            if (resAxios.data.access_token !== undefined) {
+                res.cookie('spotifyToken', token);
+                res.send("spotify cookie set");
+                // res.send(`
+                //     <!DOCTYPE html>
+                //     <html lang="en">
+                //     <head>
+                //         <script>
+                //             window.close();    
+                //         </script>
+                //     </head>
+                //     <body>
+                //     </body>
+                //     </html>
+                // `);
+            } else {
+                res.send(resAxios.data);
+            }
+
+            // var token = resAxios.data.access_token;
+            // res.cookie('spotifyToken', token);
+            // console.log(req.cookies);
+            // res.send('cookie set?!');
         }).catch(function (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
@@ -161,6 +242,57 @@ app.get('/spotify/token', (req, res) => {
         });
 });
 
+app.get("/sinteg/ldr", (req, res) => {
+    var request = {
+        method: 'get',
+        url: 'http://raspdock.duckdns.org:8123/api/states/sensor.ldr'
+    };
+
+    axios(request).then(resAxios => {
+        res.send(resAxios.data);
+    }).catch(error => {
+        res.send(error.message);
+    });
+});
+
+app.get("/sinteg/temperature", (req, res) => {
+    var request = {
+        method: 'get',
+        url: 'http://raspdock.duckdns.org:8123/api/states/sensor.temperature'
+    };
+
+    axios(request).then(resAxios => {
+        res.send(resAxios.data);
+    }).catch(error => {
+        res.send(error.message);
+    });
+});
+
+app.get("/sinteg/humidity", (req, res) => {
+    var request = {
+        method: 'get',
+        url: 'http://raspdock.duckdns.org:8123/api/states/sensor.humidity'
+    };
+
+    axios(request).then(resAxios => {
+        res.send(resAxios.data);
+    }).catch(error => {
+        res.send(error.message);
+    });
+});
+
+app.get("/sinteg/reedswitch", (req, res) => {
+    var request = {
+        method: 'get',
+        url: 'http://raspdock.duckdns.org:8123/api/states/sensor.reed_switch'
+    };
+
+    axios(request).then(resAxios => {
+        res.send(resAxios.data);
+    }).catch(error => {
+        res.send(error.message);
+    });
+});
 // app.get('/spotify/auth', (req, res) => {
 //     var scopes = ["streaming", "user-read-birthdate", "user-read-email", "user-read-private"];
 //     res.redirect(
