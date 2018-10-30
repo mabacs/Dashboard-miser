@@ -142,18 +142,18 @@ app.get('/slack/token', (req, res) => {
 
         if (resAxios.data.access_token !== undefined) {
             res.cookie('slackToken', token);
-            res.send("slack cookie set");
-            // res.send(`
-            //     <!DOCTYPE html>
-            //     <html lang="en">
-            //     <head>
-            //         <script>
-            //             window.close();    
-            //         </script>
-            //     </head>
-            //     <body></body>
-            //     </html>
-            // `);
+            // res.send("slack cookie set");
+            res.send(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <script>
+                        window.close();    
+                    </script>
+                </head>
+                <body></body>
+                </html>
+            `);
         } else {
             res.send(resAxios.data);
         }
@@ -179,7 +179,7 @@ app.get('/slack/token', (req, res) => {
 app.get('/spotify/token', (req, res) => {
     var data = {
         code: req.query.code,
-        redirect_uri: 'http://localhost:4392/spotify/token',
+        redirect_uri: 'http://barbatheus.dashboard.com:4392/spotify/token',
         grant_type: 'authorization_code',
     };
     
@@ -203,19 +203,19 @@ app.get('/spotify/token', (req, res) => {
 
             if (resAxios.data.access_token !== undefined) {
                 res.cookie('spotifyToken', token);
-                res.send("spotify cookie set");
-                // res.send(`
-                //     <!DOCTYPE html>
-                //     <html lang="en">
-                //     <head>
-                //         <script>
-                //             window.close();    
-                //         </script>
-                //     </head>
-                //     <body>
-                //     </body>
-                //     </html>
-                // `);
+                // res.send("spotify cookie set");
+                res.send(`
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <script>
+                            window.close();    
+                        </script>
+                    </head>
+                    <body>
+                    </body>
+                    </html>
+                `);
             } else {
                 res.send(resAxios.data);
             }
@@ -289,10 +289,11 @@ app.get("/sinteg/reedswitch", (req, res) => {
 
     axios(request).then(resAxios => {
         res.send(resAxios.data);
-    }).catch(error => {
+    }).catch(error => { 
         res.send(error.message);
     });
 });
+
 // app.get('/spotify/auth', (req, res) => {
 //     var scopes = ["streaming", "user-read-birthdate", "user-read-email", "user-read-private"];
 //     res.redirect(
